@@ -42,11 +42,11 @@ int triangle(Context * c_ptr) {
     }
 
     while (c_ptr->number > 0) {
-        Gen_Yield(c_ptr->number, desc);  // desc is the position name, the first position could be empty
+        Gen_Yield(c_ptr->number, desc);  // desc is the position name, the first position can be empty
         print_star(c_ptr->number);
         c_ptr->number -= 1;
     }
-    Gen_Return(0);  // when genrator is finished, return the default value
+    Gen_Return(0);  // when genrator finished, return the default value
 }
 
 
@@ -63,11 +63,9 @@ int main(int argc, char const *argv[]) {
     while (!context.state.finished) {
         i = triangle(&context);
         if (!context.state.finished) {
-            printf("%-3d ", i);  // print star number and re-enter the generator
+            printf("%-3d ", i);  // print star number and re-enter into the generator
         }
     }
-
     printf("state finished: %d, value: %d\n", context.state.finished, triangle(&context));
-
     return 0;
 }
