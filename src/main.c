@@ -1,41 +1,74 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "gen.h"
+
+/* Output:
+1   *
+2   **
+3   ***
+4   ****
+5   *****
+4   ****
+3   ***
+2   **
+1   *
+state finished: 1, value: 0
+*/
 
 
 typedef struct context_t {
     GenState state;
-    int value;
-    int end;
+    int number;
+    int width;
 } Context;
 
 
-int range(Context * c_ptr) {
-    printf("ready\n");
-    Gen_Begin(c_ptr->state);
-    printf("begin\n");
-    while (c_ptr->value < c_ptr->end) {
-        Gen_Yield(c_ptr->value);
-        c_ptr->value += 1;
+void print_star(int width) {
+    for (int i = 0; i < width; i++) {
+        printf("*");
     }
-    while (c_ptr->value >= 0) {
-        Gen_Yield(c_ptr->value, desc);
-        c_ptr->value -= 1;
+    printf("\n");
+}
+
+
+int triangle(Context * c_ptr) {
+    Gen_Begin(c_ptr->state);  // setup generator state
+    c_ptr->number = 1;
+
+    while (c_ptr->number < c_ptr->width) {
+        Gen_Yield(c_ptr->number);  // yield c_ptr->number and mark the position
+        print_star(c_ptr->number);
+        c_ptr->number += 1;
     }
-    Gen_Return(-2);
+
+    while (c_ptr->number > 0) {
+        Gen_Yield(c_ptr->number, desc);  // desc is the position name, the first position could be empty
+        print_star(c_ptr->number);
+        c_ptr->number -= 1;
+    }
+    Gen_Return(0);  // when genrator is finished, return the default value
 }
 
 
 int main(int argc, char const *argv[]) {
     Context context;
-    context.value = 0;
-    context.end = 5;
+    context.width = 5;
+
+    if (argc > 1) {
+        context.width = atoi(argv[1]);
+    }
 
     Gen_Init(context.state);
     int i;
-    while ((i = range(&context)) >= 0) {
-        printf("%d\n", i);
+    while (!context.state.finished) {
+        i = triangle(&context);
+        if (!context.state.finished) {
+            printf("%-3d ", i);  // print star number and re-enter the generator
+
+        }
     }
-    printf("%d\n", range(&context));
+
+    printf("state finished: %d, value: %d\n", context.state.finished, triangle(&context));
 
     return 0;
 }
