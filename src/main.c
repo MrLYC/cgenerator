@@ -35,6 +35,10 @@ int triangle(Context * c_ptr) {
     Gen_Begin(c_ptr->state);  // setup generator state
     c_ptr->number = 1;
 
+    if (c_ptr->number > c_ptr->width) {
+        Gen_Abort();  // jump to Gen_Finish position
+    }
+
     while (c_ptr->number < c_ptr->width) {
         Gen_Yield(c_ptr->number);  // yield c_ptr->number and mark the position
         print_star(c_ptr->number);

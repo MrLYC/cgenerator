@@ -1,3 +1,4 @@
+#pragma once
 #include <stdbool.h>
 #include <stddef.h>
 
@@ -15,8 +16,12 @@ typedef struct {
 #define Gen_Mark(label) label: _gen_state_->position = &&label;
 #endif
 
+#ifndef Gen_Finish_Label
+#define Gen_Finish_Label Gen_Label(_Finish_)
+#endif
+
 #ifndef Gen_End_Label
-#define Gen_End_Label Gen_Label(_Finished_)
+#define Gen_End_Label Gen_Label(_End_)
 #endif
 
 #ifndef Gen_Init
@@ -45,8 +50,15 @@ return gen_value; \
 Gen_Mark(Gen_Label(__VA_ARGS__));
 #endif
 
+#ifndef Gen_Abort
+#define Gen_Abort() \
+_gen_state_->position = &&Gen_Finish_Label; \
+goto Gen_Finish_Label;
+#endif
+
 #ifndef Gen_Finish
 #define Gen_Finish(...) \
+Gen_Mark(Gen_Finish_Label); \
 gen_finish(_gen_state_); \
 Gen_Mark(Gen_End_Label); \
 return __VA_ARGS__;
