@@ -64,7 +64,6 @@ int main(int argc, char const *argv[]) {
         i = triangle(&context);
         if (!context.state.finished) {
             printf("%-3d ", i);  // print star number and re-enter the generator
-
         }
     }
 
