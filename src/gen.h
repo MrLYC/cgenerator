@@ -45,11 +45,11 @@ return gen_value; \
 Gen_Mark(Gen_Label(__VA_ARGS__));
 #endif
 
-#ifndef Gen_Return
-#define Gen_Return(gen_value) \
+#ifndef Gen_Finish
+#define Gen_Finish(...) \
 gen_finish(_gen_state_); \
 Gen_Mark(Gen_End_Label); \
-return gen_value;
+return __VA_ARGS__;
 #endif
 
 void gen_init(GenState *);

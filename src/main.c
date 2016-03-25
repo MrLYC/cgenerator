@@ -46,7 +46,7 @@ int triangle(Context * c_ptr) {
         print_star(c_ptr->number);
         c_ptr->number -= 1;
     }
-    Gen_Return(0);  // when genrator finished, return the default value
+    Gen_Finish(0);  // when genrator finished, return the default value
 }
 
 
