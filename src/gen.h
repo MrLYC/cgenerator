@@ -5,11 +5,14 @@ typedef struct {
     void * position;
     bool finished;
     bool started;
-    bool yielded;
 } GenState;
 
 #ifndef Gen_Label
-#define Gen_Label(name) _Gen##name
+#define Gen_Label(name) _Gen_##name
+#endif
+
+#ifndef Gen_Mark
+#define Gen_Mark(label) label: _gen_state_->position = &&label;
 #endif
 
 #ifndef Gen_End_Label
@@ -24,34 +27,28 @@ typedef struct {
 #define Gen_Begin(gen_state) \
 GenState * _gen_state_ = &(gen_state); \
 if (_gen_state_->finished) { \
-    _gen_state_->yielded = true; \
     goto Gen_End_Label; \
 }  \
 else if (_gen_state_->started) { \
-    _gen_state_->yielded = true; \
     goto *(_gen_state_->position); \
 } \
 else { \
+    _gen_state_->position = &&Gen_End_Label; \
     _gen_state_->started = true; \
-    _gen_state_->yielded = false; \
 }
 #endif
 
 #ifndef Gen_Yield
 #define Gen_Yield(gen_value, ...) \
-Gen_Label(__VA_ARGS__): if (_gen_state_->yielded) { \
-    _gen_state_->yielded = false; \
-} \
-else { \
-    _gen_state_->position = &&Gen_Label(__VA_ARGS__); \
-    return gen_value; \
-}
+_gen_state_->position = &&Gen_Label(__VA_ARGS__); \
+return gen_value; \
+Gen_Mark(Gen_Label(__VA_ARGS__));
 #endif
 
 #ifndef Gen_Return
 #define Gen_Return(gen_value) \
 gen_finish(_gen_state_); \
-Gen_End_Label: _gen_state_->position = &&Gen_End_Label; \
+Gen_Mark(Gen_End_Label); \
 return gen_value;
 #endif
 
