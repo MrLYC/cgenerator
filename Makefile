@@ -2,7 +2,7 @@ SOURCES=$(wildcard src/*.c)
 OBJECTS=$(patsubst %.c, objs/%.o, $(SOURCES))
 TARGET=objs/app
 
-CC=gcc -c -g -O2 -Wall -Wextra -I=src
+CC=gcc -c -g -O2 -Wall -Wextra -I=src -std=c99
 LINK=gcc -o
 
 $(TARGET): build compile link
